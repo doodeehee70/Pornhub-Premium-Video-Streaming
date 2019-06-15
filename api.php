@@ -36,8 +36,9 @@ $dom = new DOMDocument();
     return $dom->getElementsByTagName('input')[3]->getAttribute('value');
 }
 function loginx($token) {
-$email = ""; //pornhub email
-$passw = ""; //pornhub password
+  $email = ""; //pornhub email
+  $passw = ""; //pornhub password
+  if ($passw === "" || $email === "") {exit('set your pornhub email and password inside loginx() function');}
 $url="https://www.pornhubpremium.com/front/authenticate";
 $postinfo = "username=".$email."&password=".$passw."&remember_me=on&token=".$token."&from=pc_premium_login&segment=straight";
 $ch = curl_init();
