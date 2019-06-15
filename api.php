@@ -15,10 +15,8 @@ curl_close($ch);
 return $htmlf;
 }
 function createCookie() {
-
 $ua = 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US) AppleWebKit/525.13 (KHTML, like Gecko) Chrome/0.A.B.C Safari/525.13';
-
-   $ch = curl_init();
+$ch = curl_init();
 $timeout = 10;
 curl_setopt($ch, CURLOPT_URL,"https://www.pornhubpremium.com/premium/login");
 curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
@@ -29,8 +27,7 @@ curl_setopt($ch, CURLOPT_AUTOREFERER, true);
 curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
 curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, $timeout);
 $htmlf = curl_exec($ch);
-
- $internalErrors = libxml_use_internal_errors(true);
+$internalErrors = libxml_use_internal_errors(true);
 $dom = new DOMDocument();
 @$dom->loadHTML($htmlf);
     return $dom->getElementsByTagName('input')[3]->getAttribute('value');
@@ -54,7 +51,6 @@ curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
 curl_setopt($ch, CURLOPT_REFERER, $_SERVER['REQUEST_URI']);
 curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
 curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 0);
-
 curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "POST");
 curl_setopt($ch, CURLOPT_POST, 1);
 curl_setopt($ch, CURLOPT_POSTFIELDS, $postinfo);
@@ -65,20 +61,13 @@ function curfl($url){
 $ua = 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US) AppleWebKit/525.13 (KHTML, like Gecko) Chrome/0.A.B.C Safari/525.13';
 $ch = curl_init();
 curl_setopt($ch,CURLOPT_URL, $url);
-
 curl_setopt($ch, CURLOPT_HEADER, true);
-
 curl_setopt($ch, CURLOPT_RETURNTRANSFER,true);
 curl_setopt($ch, CURLOPT_USERAGENT, $ua);
-//curl_setopt($ch, CURLOPT_COOKIE, 'ua=edec0a4eba84ab87418dfe91e6a92868; platform=pc; bs=h1gus3n1jc6dn1afl6l1vjenqro6k4po; ss=347229569018964928; il=v1nAYlvJ9f22Ff0IpC_zCz37jbi3K8xzw7Epo7SqDQi3YxNTYwNjU1NDU4UWc2U3F5TkRadGNqUUlVTXlmRFp4QVAtUVhNSlBJTXdQN3JmQkN6cw..; expiredEnterModalShown=1; RNLBSERVERID=ded1711; pp-sid=OhK5q6ROlb1oOO9vFiyq0RvFSiQxAxUUQik7u1ZR; performance_timing=video');
-
 curl_setopt($ch, CURLOPT_COOKIEFILE, 'cookies.txt');
 curl_setopt($ch, CURLOPT_AUTOREFERER, true);
 curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
 curl_setopt($ch, CURLOPT_MAXREDIRS, 1);
-//curl_setopt($ch,CURLOPT_POST, true);
-//curl_setopt($ch,CURLOPT_POSTFIELDS, $fields_string);phncdn.com\/videos
-
 $data = curl_exec($ch);
 $last = curl_getinfo($ch, CURLINFO_EFFECTIVE_URL);
 curl_close($ch);
@@ -105,9 +94,8 @@ if (isset($_GET['f']) && !empty($_GET['f'])) {
 } else {
   $formatx = 'mp4'; //default format
 }
-$current_time = time(); $expire_time = 1 * 60 * 60;
-//decisions, decisions
-$filexk = $vidkey.".txt";
+$current_time = time();
+$filexk = $vidkey.".txt"; //filename for cache
 if(file_exists($filexk)) {
 
  $rie = file_get_contents($filexk);
@@ -120,21 +108,22 @@ if(file_exists($filexk)) {
    echo $rie;
    exit();
  }
-   //file_put_contents($vidkey.".txt", json_encode($aiv));
-
  }
-
 }
 $scriptx = "";
 $internalErrors = libxml_use_internal_errors(true);
 $dom = new DOMDocument();
 @$dom->loadHTML(curfl('https://www.pornhubpremium.com/view_video.php?viewkey='.$vidkey));
+$xpath = new DOMXPath($dom);
+$nlist = $xpath->query("//meta[@property='og:title']");
+$titlek = $nlist[0]->getAttribute("content"); //video title
 foreach($dom->getElementsByTagName('script') as $k => $js) {
 
        $scriptx .= $js->nodeValue; //append all js into variable.
 
 }
 $aiv = [];
+$aiv['title'] = $titlek;
 $soif = explode('"mediaDefinitions":[{"defaultQuality"', $scriptx);
 $opsigj = '[{"defaultQuality"'.$soif[1];
 $isii = explode('"}],"isVertical"', $opsigj);
@@ -148,16 +137,16 @@ foreach ($isx as $kk => $vid) {
       if ($vid['quality'] > 1080) {
         unset($isx[$kk]); //removes 4k video links.
       } else {
-        $aiv[$xirx]['url'] = $vid['videoUrl'];
-        $aiv[$xirx]['quality'] = $vid['quality'];
+        $aiv['links'][$xirx]['url'] = $vid['videoUrl'];
+        $aiv['links'][$xirx]['quality'] = $vid['quality'];
         $xirx = $xirx+1;
       }
     }
 
 }
-if (strpos($aiv[0]['url'], '&hash=') !== false) {
+if (strpos($aiv['links'][0]['url'], '&hash=') !== false) {
 
-  file_put_contents($vidkey.".txt", json_encode($aiv, JSON_PRETTY_PRINT|JSON_UNESCAPED_SLASHES));
+  file_put_contents($vidkey.".txt", json_encode($aiv, JSON_PRETTY_PRINT|JSON_UNESCAPED_SLASHES)); //save to cache file if the links are valid
 echo json_encode($aiv, JSON_PRETTY_PRINT|JSON_UNESCAPED_SLASHES);
 } else {
   //configure below if you want to retry when error is returned.
