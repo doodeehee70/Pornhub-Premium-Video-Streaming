@@ -12,3 +12,6 @@ or using just the key
 https://faunal-misalignment.000webhostapp.com/po/api.php?u=ph5cf170315ef3f
 
 links are cached based on ttl timestamp from the pornhub urls I think it's around 2-3hrs.
+
+
+This is still a very basic version that was rushed so code is messy at the moment.
