@@ -116,6 +116,8 @@ $dom = new DOMDocument();
 @$dom->loadHTML(curfl('https://www.pornhubpremium.com/view_video.php?viewkey='.$vidkey));
 $xpath = new DOMXPath($dom);
 $nlist = $xpath->query("//meta[@property='og:title']");
+$nlistx = $xpath->query("//meta[@property='og:image']");
+$imagex = $nlistx[0]->getAttribute("content"); //video title
 $titlek = $nlist[0]->getAttribute("content"); //video title
 foreach($dom->getElementsByTagName('script') as $k => $js) {
 
@@ -124,6 +126,7 @@ foreach($dom->getElementsByTagName('script') as $k => $js) {
 }
 $aiv = [];
 $aiv['title'] = $titlek;
+$aiv['poster'] = $imagex;
 $soif = explode('"mediaDefinitions":[{"defaultQuality"', $scriptx);
 $opsigj = '[{"defaultQuality"'.$soif[1];
 $isii = explode('"}],"isVertical"', $opsigj);
